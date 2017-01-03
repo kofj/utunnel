@@ -25,8 +25,8 @@ func Wrap(wrapped net.Conn) net.Conn {
 
 	cc.w = w
 
-	return cc
-	//return &Snappyconn{wrapped, snappy.NewReader(wrapped), snappy.NewBufferedWriter(wrapped)}
+	//return cc
+	return &Snappyconn{wrapped, snappy.NewReader(wrapped), snappy.NewBufferedWriter(wrapped)}
 }
 
 type writeFlusher struct {
