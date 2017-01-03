@@ -69,10 +69,10 @@ func (c *Snappyconn) Read(b []byte) (n int, err error) {
 }
 
 func (c *Snappyconn) Write(b []byte) (n int, err error) {
-	//n, err = c.w.Write(b)
-	//if err == nil {
-	//	err = c.w.Flush()
-	//}
-	//return n, err
-	return c.w.Write(b)
+	n, err = c.w.Write(b)
+	if err == nil {
+		err = c.w.Flush()
+	}
+	return n, err
+	//return c.w.Write(b)
 }
