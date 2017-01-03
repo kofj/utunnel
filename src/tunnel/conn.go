@@ -12,6 +12,15 @@ type Conn struct {
 }
 
 func NewConn(conn net.Conn, cipher *Cipher, pool *recycler) *Conn {
+
+    if(cipher == nil) {
+        return &Conn{
+        conn: conn,
+        cipher: cipher,
+        pool: pool,
+        }
+    }
+
     return &Conn{
         conn: Wrap(conn),
         cipher: cipher,
