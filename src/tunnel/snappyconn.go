@@ -2,7 +2,6 @@ package tunnel
 
 import (
 	"github.com/golang/snappy"
-	"fmt"
 	"io"
 	"net"
 	"compress/flate"
@@ -10,20 +9,20 @@ import (
 
 // Wrap wraps a connection and adds snappy compression on reading and writing.
 func Wrap(wrapped net.Conn) net.Conn {
-	cc := &CompressConn{Conn: wrapped}
+	//cc := &CompressConn{Conn: wrapped}
 	
-	r := io.Reader(cc.Conn)
-	r = flate.NewReader(r)
-	cc.r = r
+	//r := io.Reader(cc.Conn)
+	//r = flate.NewReader(r)
+	//cc.r = r
 	
-	w := io.Writer(cc.Conn)
-	zw, err := flate.NewWriter(w, flate.DefaultCompression)
-	if err != nil {
-		panic(fmt.Sprintf("BUG: flate.NewWriter(%d) returned non-nil err: %s", flate.DefaultCompression, err))
-	}
-	w = &writeFlusher{w: zw}
+	//w := io.Writer(cc.Conn)
+	//zw, err := flate.NewWriter(w, flate.DefaultCompression)
+	//if err != nil {
+	//	panic(fmt.Sprintf("BUG: flate.NewWriter(%d) returned non-nil err: %s", flate.DefaultCompression, err))
+	//}
+	//w = &writeFlusher{w: zw}
 
-	cc.w = w
+	//cc.w = w
 
 	//return cc
 	return &Snappyconn{wrapped, snappy.NewReader(wrapped), snappy.NewBufferedWriter(wrapped)}
@@ -74,5 +73,20 @@ func (c *Snappyconn) Write(b []byte) (n int, err error) {
 		err = c.w.Flush()
 	}
 	return n, err
-	//return c.w.Write(b)
+}
+
+func (c *Snappyconn) Close() error {
+	return c.Conn.Close()
+}
+
+func (c *Snappyconn) CloseRead() {
+    if conn, ok := c.Conn.(*net.TCPConn); ok {
+        conn.CloseRead()
+    }
+}
+
+func (c *Snappyconn) CloseWrite() {
+    if conn, ok := c.Conn.(*net.TCPConn); ok {
+        conn.CloseWrite()
+    }
 }
